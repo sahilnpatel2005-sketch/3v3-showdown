@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3v3 Showdown — Boys Basketball Tournament</title>
+<style>
+  :root {
+    --orange: #ff6b1a;
+    --orange-dark: #e2540a;
+    --navy: #0d1b2a;
+    --navy-light: #1b2a3d;
+    --cream: #f5f3ee;
+    --line: rgba(255,255,255,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(13,27,42,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; position: relative; align-items: center; justify-content: space-between; height: 68px; }
+  .logo { font-weight: 900; font-size: 1.25rem; letter-spacing: -0.5px; }
+  .logo span { color: var(--orange); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { color: var(--cream); text-decoration: none; font-weight: 600; font-size: 0.95rem; opacity: 0.85; transition: opacity .2s; }
+  .nav-links a:hover { opacity: 1; }
+  .btn {
+    display: inline-block;
+    background: var(--orange);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    padding: 12px 26px;
+    border-radius: 999px;
+    transition: transform .15s, background .2s;
+    border: none; cursor: pointer; font-size: 1rem;
+  }
+  .btn:hover { background: var(--orange-dark); transform: translateY(-2px); }
+  .nav-links .btn { padding: 10px 22px; font-size: 0.9rem; }
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--cream);
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+  .menu-toggle:hover { border-color: rgba(255,107,26,0.5); }
+  @media (max-width: 720px) {
+    .menu-toggle { display: block; }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 68px; left: 0; right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: rgba(13,27,42,0.98);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px 20px;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      width: 100%;
+    }
+    .nav-links a:last-child { border-bottom: none; margin-top: 8px; text-align: center; }
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 110px 0 90px;
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% -10%, rgba(255,107,26,0.35), transparent 55%),
+      linear-gradient(180deg, var(--navy-light), var(--navy));
+  }
+  .hero .pill {
+    display: inline-block;
+    background: rgba(255,107,26,0.15);
+    border: 1px solid rgba(255,107,26,0.4);
+    color: var(--orange);
+    font-weight: 700; font-size: 0.85rem;
+    padding: 7px 18px; border-radius: 999px;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 26px;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 8vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 22px;
+  }
+  .hero h1 .accent { color: var(--orange); display: block; }
+  .hero p.sub { font-size: clamp(1.05rem, 2.5vw, 1.35rem); opacity: 0.85; max-width: 620px; margin: 0 auto 38px; }
+  .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--line);
+    color: var(--cream);
+  }
+  .btn-outline:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid var(--line);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.16); }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .venue-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+    background: var(--navy-light);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 44px;
+  }
+  @media (max-width: 760px) { .venue-card { grid-template-columns: 1fr; } }
+  .venue-card .date-block {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 900;
+    color: var(--orange);
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+  .venue-card h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+  .venue-card .address { opacity: 0.8; margin-bottom: 16px; }
+  .venue-card .checkin { font-size: 0.95rem; opacity: 0.7; margin-top: 12px; }
+  .cta-final .cta-note { font-size: 0.95rem; opacity: 0.7; margin-bottom: 34px; }
+  footer a { color: var(--orange); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .footer-links { margin-top: 10px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+  /* STAT STRIP */
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { background: var(--navy); padding: 36px 16px; text-align: center; }
+  .stat .num { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; color: var(--orange); letter-spacing: -1px; }
+  .stat .label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.65; margin-top: 6px; }
+
+  /* SECTIONS */
+  section.block { padding: 80px 0; }
+  .section-head { text-align: center; margin-bottom: 54px; }
+  .section-head .eyebrow { color: var(--orange); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
+  .section-head h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -1px; margin-top: 10px; }
+
+  /* PRIZE POT */
+  .pot {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    border-radius: 24px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 30px 60px -20px rgba(255,107,26,0.5);
+  }
+  .pot .pot-label { text-transform: uppercase; letter-spacing: 3px; font-weight: 800; font-size: 0.9rem; opacity: 0.9; }
+  .pot .pot-amount { font-size: clamp(3.5rem, 14vw, 8rem); font-weight: 900; letter-spacing: -3px; line-height: 1; margin: 8px 0 4px; }
+  .pot .pot-note { font-size: 1.1rem; opacity: 0.92; font-weight: 600; }
+  .payout { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 40px; }
+  .payout div { background: rgba(255,255,255,0.18); border-radius: 14px; padding: 20px 12px; }
+  .payout .place { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.9; }
+  .payout .money { font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 900; margin-top: 4px; }
+  @media (max-width:560px){ .payout{ grid-template-columns: 1fr; } }
+
+  /* TIME SLOTS */
+  .slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 20px; }
+  .slot {
+    background: var(--navy-light);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px;
+    transition: transform .2s, border-color .2s;
+  }
+  .slot:hover { transform: translateY(-4px); border-color: rgba(255,107,26,0.5); }
+  .slot .time { font-size: 1.6rem; font-weight: 900; color: var(--orange); letter-spacing: -1px; }
+  .slot .division { font-weight: 800; font-size: 1.1rem; margin: 8px 0 6px; }
+  .slot .desc { opacity: 0.75; font-size: 0.95rem; }
+  .slot .tag {
+    display: inline-block; margin-top: 16px;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    background: rgba(255,107,26,0.15); color: var(--orange);
+    padding: 5px 14px; border-radius: 999px;
+  }
+  .slot .tag.filling { background: rgba(255,80,80,0.18); color: #ff7a7a; }
+
+  /* ENTRY FEE */
+  .fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+  @media (max-width:760px){ .fee-grid{ grid-template-columns: 1fr; } }
+  .fee-card {
+    background: var(--navy-light);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 44px;
+  }
+  .fee-card .price { font-size: clamp(3rem,9vw,4.5rem); font-weight: 900; color: var(--orange); letter-spacing: -2px; }
+  .fee-card .price small { font-size: 1.1rem; color: var(--cream); opacity: 0.7; font-weight: 600; letter-spacing: 0; }
+  .fee-list { list-style: none; margin-top: 24px; }
+  .fee-list li { padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+  .fee-list li:last-child { border-bottom: none; }
+  .fee-list li::before { content: "✓"; color: var(--orange); font-weight: 900; }
+  .fee-copy h3 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 14px; }
+  .fee-copy p { opacity: 0.8; margin-bottom: 18px; }
+
+  /* RULES */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 22px; }
+  .rule { display: flex; gap: 16px; }
+  .rule .icon { flex: none; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,107,26,0.15); color: var(--orange); display: grid; place-items: center; font-weight: 900; font-size: 1.2rem; }
+  .rule h4 { font-weight: 800; margin-bottom: 4px; }
+  .rule p { opacity: 0.75; font-size: 0.92rem; }
+
+  /* CTA */
+  .cta-final { text-align: center; padding: 90px 0; background: radial-gradient(circle at 50% 120%, rgba(255,107,26,0.3), transparent 60%); }
+  .cta-final h2 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 900; letter-spacing: -1.5px; margin-bottom: 18px; }
+  .cta-final p { opacity: 0.85; max-width: 520px; margin: 0 auto 12px; font-size: 1.1rem; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 40px 0; text-align: center; opacity: 0.75; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<script>
+  const CONFIG = {
+    GOOGLE_FORM_URL: "https://forms.gle/REPLACE_ME",
+    VENMO_URL: "https://venmo.com/YOUR_HANDLE",
+    CASHAPP_URL: "https://cash.app/$YOUR_HANDLE",
+    TOURNAMENT_DATE: "Saturday, June 14, 2026",
+    VENUE_NAME: "Backyard Courts",
+    VENUE_ADDRESS: "123 Main Street, Your City, ST 00000",
+    MAPS_URL: "https://www.google.com/maps/search/?api=1&query=123+Main+Street+Your+City",
+    CHECKIN_TIME: "8:30 AM",
+    PHONE: "(555) 012-3456",
+    EMAIL: "your.email@example.com",
+    HASHTAG: "#RunTheRack"
+  };
+</script>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">3v3 <span>SHOWDOWN</span></div>
+    <div class="nav-right">
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">&#9776;</button>
+      <div class="nav-links" id="nav-links">
+        <a href="#when">When &amp; Where</a>
+        <a href="#pot">Prize Pot</a>
+        <a href="#times">Schedule</a>
+        <a href="#fee">Entry</a>
+        <a href="#" class="btn btn-register" target="_blank" rel="noopener">Register</a>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill">Boys Open Division • All Ages Welcome</span>
+    <h1>3v3 STREET<span class="accent">SHOWDOWN</span></h1>
+    <p class="sub">One day. Open run. Bring your squad and ball out for the pot. Open division means anybody can sign up — no brackets locked, all comers welcome.</p>
+    <div class="hero-cta">
+      <a href="#" class="btn btn-register" target="_blank" rel="noopener">Lock In Your Team</a>
+      <a href="#times" class="btn btn-outline">View Time Slots</a>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="num">3v3</div><div class="label">Half Court</div></div>
+  <div class="stat"><div class="num">OPEN</div><div class="label">No Age Cap</div></div>
+  <div class="stat"><div class="num">1 DAY</div><div class="label">All Sessions</div></div>
+</div>
+
+<!-- WHEN & WHERE -->
+<section class="block" id="when">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Mark Your Calendar</div>
+      <h2>When &amp; Where</h2>
+    </div>
+    <div class="venue-card">
+      <div>
+        <div class="date-block" id="venue-date">Saturday, June 14, 2026</div>
+        <h3 id="venue-name">Backyard Courts</h3>
+        <p class="address" id="venue-address">123 Main Street, Your City, ST 00000</p>
+        <p class="checkin">Check-in opens at <span id="venue-checkin">8:30 AM</span> — arrive early to warm up.</p>
+      </div>
+      <a href="#" class="btn btn-outline" id="venue-maps" target="_blank" rel="noopener">Get Directions</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRIZE POT -->
+<section class="block" id="pot">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Winner Takes The Stack</div>
+      <h2>The Prize Pot</h2>
+    </div>
+    <div class="pot">
+      <div class="pot-label">Total Cash Pot</div>
+      <div class="pot-amount">$1,500</div>
+      <div class="pot-note">Pot grows with every team that enters — the more squads, the bigger the bag.</div>
+      <div class="payout">
+        <div><div class="place">🥇 1st Place</div><div class="money">$900</div></div>
+        <div><div class="place">🥈 2nd Place</div><div class="money">$450</div></div>
+        <div><div class="place">🥉 3rd Place</div><div class="money">$150</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIME SLOTS -->
+<section class="block" id="times" style="background:var(--navy-light);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Pick Your Run</div>
+      <h2>Tournament Times</h2>
+    </div>
+    <div class="slots">
+      <div class="slot">
+        <div class="time">9:00 AM</div>
+        <div class="division">Early Run — Ages 14 &amp; Under</div>
+        <div class="desc">Pool play kicks off. Check-in by 8:30 AM.</div>
+        <span class="tag">Spots Open</span>
+      </div>
+      <div class="slot">
+        <div class="time">11:30 AM</div>
+        <div class="division">Mid Session — Ages 15–17</div>
+        <div class="desc">High school squads. Bracket play all session.</div>
+        <span class="tag filling">Filling Fast</span>
+      </div>
+      <div class="slot">
+        <div class="time">2:00 PM</div>
+        <div class="division">Open Run — 18+ </div>
+        <div class="desc">The big one. No ceiling, all hoopers welcome.</div>
+        <span class="tag">Spots Open</span>
+      </div>
+      <div class="slot">
+        <div class="time">5:00 PM</div>
+        <div class="division">Championship Finals</div>
+        <div class="desc">Top squads from every session battle for the pot.</div>
+        <span class="tag">Bring The Crowd</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENTRY FEE -->
+<section class="block" id="fee">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Lock It In</div>
+      <h2>Entry Fee</h2>
+    </div>
+    <div class="fee-grid">
+      <div class="fee-card">
+        <div class="price">$60<small> / team</small></div>
+        <ul class="fee-list">
+          <li>3 players + 1 sub allowed</li>
+          <li>Guaranteed minimum 3 games</li>
+          <li>Game jersey / pinnie included</li>
+          <li>Entry into the cash pot</li>
+          <li>Water &amp; snacks on site</li>
+        </ul>
+      </div>
+      <div class="fee-copy">
+        <h3>$20 a head, that's it.</h3>
+        <p>Sixty bucks splits three ways and your whole squad is in. Every dollar of entry feeds the pot — so a packed bracket means a heavier payout for the winners.</p>
+        <p>Pay at registration. Cash, Venmo, or Cash App accepted. Spots are first-come, first-served until each session fills.</p>
+        <a href="#" class="btn btn-register" target="_blank" rel="noopener">Reserve Your Spot</a>
+        <div class="btn-row">
+          <a href="#" class="btn btn-secondary" id="link-venmo" target="_blank" rel="noopener">Pay with Venmo</a>
+          <a href="#" class="btn btn-secondary" id="link-cashapp" target="_blank" rel="noopener">Pay with Cash App</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section class="block" style="background:var(--navy-light);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Know Before You Go</div>
+      <h2>Quick Rules</h2>
+    </div>
+    <div class="rules">
+      <div class="rule"><div class="icon">1</div><div><h4>Games to 21</h4><p>Win by 2 or first to 21. 1s and 2s scoring.</p></div></div>
+      <div class="rule"><div class="icon">2</div><div><h4>Make It, Take It</h4><p>Score and keep the ball. Check up top after baskets.</p></div></div>
+      <div class="rule"><div class="icon">3</div><div><h4>Call Your Own</h4><p>Self-officiated pool play. Refs for the finals.</p></div></div>
+      <div class="rule"><div class="icon">4</div><div><h4>10 Min Cap</h4><p>Highest score wins if the clock hits zero.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-final" id="register">
+  <div class="wrap">
+    <h2>Got a squad? Run it.</h2>
+    <p>Fill out the registration form — we'll confirm your slot within 24 hours.</p>
+    <p class="cta-note">Already paid? Note your Venmo or Cash App handle in the form.</p>
+    <a href="#" class="btn btn-register" target="_blank" rel="noopener">Register Your Team</a>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap">
+    <p>3v3 Street Showdown</p>
+    <div class="footer-links">
+      <a href="#" id="footer-phone">Text: (555) 012-3456</a>
+      <a href="#" id="footer-email">Email us</a>
+      <span id="footer-hashtag">#RunTheRack</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.btn-register').forEach(function (el) {
+    el.href = CONFIG.GOOGLE_FORM_URL;
+  });
+  document.getElementById('venue-date').textContent = CONFIG.TOURNAMENT_DATE;
+  document.getElementById('venue-name').textContent = CONFIG.VENUE_NAME;
+  document.getElementById('venue-address').textContent = CONFIG.VENUE_ADDRESS;
+  document.getElementById('venue-checkin').textContent = CONFIG.CHECKIN_TIME;
+  document.getElementById('venue-maps').href = CONFIG.MAPS_URL;
+  document.getElementById('link-venmo').href = CONFIG.VENMO_URL;
+  document.getElementById('link-cashapp').href = CONFIG.CASHAPP_URL;
+  document.getElementById('footer-phone').href = 'tel:' + CONFIG.PHONE.replace(/[^0-9+]/g, '');
+  document.getElementById('footer-phone').textContent = 'Text: ' + CONFIG.PHONE;
+  document.getElementById('footer-email').href = 'mailto:' + CONFIG.EMAIL;
+  document.getElementById('footer-email').textContent = CONFIG.EMAIL;
+  document.getElementById('footer-hashtag').textContent = CONFIG.HASHTAG;
+
+  var toggle = document.querySelector('.menu-toggle');
+  var navLinks = document.getElementById('nav-links');
+  toggle.addEventListener('click', function () {
+    var open = navLinks.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  navLinks.querySelectorAll('a:not(.btn-register)').forEach(function (link) {
+    link.addEventListener('click', function () {
+      navLinks.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open menu');
+    });
+  });
+</script>
+
+</body>
+</html>
